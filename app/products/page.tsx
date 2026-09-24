@@ -43,6 +43,7 @@ export default function ProductsPage() {
   // Local state
   const [inputValue, setInputValue] = useState(searchQuery);
   const [data, setData] = useState<ProductsResponse | null>(null);
+  const [hasFetched, setHasFetched] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -111,6 +112,7 @@ export default function ProductsPage() {
       setError("Failed to load products. Please try again.");
     } finally {
       setIsLoading(false);
+      setHasFetched(true);
     }
   }, [currentPage, pageSize, searchQuery, selectedCategory, sortBy, order]);
 
@@ -179,8 +181,8 @@ export default function ProductsPage() {
         <Loader />
       ) : error ? (
         <ErrorState message={error} onRetry={fetchProducts} />
-      ) : !data || data.products.length === 0 ? (
-        <EmptyState message="No products found. Try a different search or filter." />
+      ) : !hasFetched || !data || data.products.length === 0 ? (
+        isLoading ? <Loader /> : <EmptyState message="No products found. Try a different search or filter." />
       ) : (
         <>
           {/* Desktop table */}
